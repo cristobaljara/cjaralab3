@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sliding Puzzle</title>
+	<style type="text/css">
+		#container {
+			width: 616px;
+
+		}
+
+		.square {
+
+			width: 200px;
+			/* height: 200px; */
+			border: 1px solid #000000;
+			display: inline-block;
+			text-align: center;
+			padding: 82px 0;
+			font-size: 32px;
+			font-family: arial;
+			margin-bottom: 4px;
+		}
+
+	</style>
+</head>
+<body>
+<div id="container">
+	<div id="sq0" class="square"></div>
+	<div id="sq1" class="square"></div>
+	<div id="sq2" class="square"></div>
+	<div id="sq3" class="square"></div>
+	<div id="sq4" class="square"></div>
+	<div id="sq5" class="square"></div>
+	<div id="sq6" class="square"></div>
+	<div id="sq7" class="square"></div>
+	<div id="sq8" class="square"></div>
+
+
+</div>
+<p>Moves: 0</p>
+<p id="time">Start Time:</p>
+<button id="restart">RESTART GAME</button>
+<script type="text/javascript">
+	var data = [3, 8, 6, 7, '', 2, 1, 4, 5];
+	for (var i = 0; i < data.length; i++) {
+		if (data[i]=='') {
+
+			document.getElementById("sq"+i).innerHTML="&nbsp;"
+
+		}
+		else{
+
+			document.getElementById("sq"+i).innerHTML=data[i]
+		}		
+	}
+
+	var date = new Date()
+	document.getElementById("time").innerHTML=
+	"Start Time: "+
+	date.getHours()+":"+
+	date.getMinutes()+":"+
+	date.getSeconds()
+
+	function puzzleRestart(){
+		location.reload();
+	}
+
+	document.getElementById("restart")
+	.addEventListener('click',puzzleRestart);
+
+</script>
+</body>
+</html>
