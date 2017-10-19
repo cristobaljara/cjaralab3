@@ -6,4 +6,5 @@ for (var i = arr.length; i < 5; i += 1){
 
 console.log (arr);
 
-answer[20, 30, 4, 9, 16]
+//Will execute without errors
+//answer[20, 30, 4, 9, 16]
