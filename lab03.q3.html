@@ -1,73 +1,209 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sliding Puzzle</title>
-	<style type="text/css">
-		#container {
-			width: 616px;
+    <title>Sliding Puzzle</title>
+    <style type="text/css">
+        #container {
+            width: 616px;
 
-		}
+        }
 
-		.square {
+        .square {
 
-			width: 200px;
-			/* height: 200px; */
-			border: 1px solid #000000;
-			display: inline-block;
-			text-align: center;
-			padding: 82px 0;
-			font-size: 32px;
-			font-family: arial;
-			margin-bottom: 4px;
-		}
+            width: 200px;
+            /* height: 200px; */
+            border: 1px solid #000000;
+            display: inline-block;
+            text-align: center;
+            padding: 82px 0;
+            font-size: 32px;
+            font-family: arial;
+            margin-bottom: 4px;
+        }
+        .green {
 
-	</style>
+            background-color: #a1e406;
+        }
+        .red {
+
+            background-color: #fc1e70;
+        }   
+    </style>
 </head>
 <body>
 <div id="container">
-	<div id="sq0" class="square"></div>
-	<div id="sq1" class="square"></div>
-	<div id="sq2" class="square"></div>
-	<div id="sq3" class="square"></div>
-	<div id="sq4" class="square"></div>
-	<div id="sq5" class="square"></div>
-	<div id="sq6" class="square"></div>
-	<div id="sq7" class="square"></div>
-	<div id="sq8" class="square"></div>
+    <div id="sq00" class="square" data-y="0" data-x="0"></div>
+    <div id="sq01" class="square" data-y="0" data-x="1"></div>
+    <div id="sq02" class="square" data-y="0" data-x="2"></div>
+    <div id="sq10" class="square" data-y="1" data-x="0"></div>
+    <div id="sq11" class="square" data-y="1" data-x="1"></div>
+    <div id="sq12" class="square" data-y="1" data-x="2"></div>
+    <div id="sq20" class="square" data-y="2" data-x="0"></div>
+    <div id="sq21" class="square" data-y="2" data-x="1"></div>
+    <div id="sq22" class="square" data-y="2" data-x="2"></div>
 
 
 </div>
-<p>Moves: 0</p>
+<p id="moveitpls">Moves: 0</p>
 <p id="time">Start Time:</p>
+<p id="end time">End Time:</p>
 <button id="restart">RESTART GAME</button>
 <script type="text/javascript">
-	var data = [3, 8, 6, 7, '', 2, 1, 4, 5];
-	for (var i = 0; i < data.length; i++) {
-		if (data[i]=='') {
 
-			document.getElementById("sq"+i).innerHTML="&nbsp;"
+var game = function (){
 
-		}
-		else{
+    this.data = [[3, 8, 6],[7, '', 2],[1, 4, 5] ]
+    this.emptybox = {x: null, y: null};
+    this.moves = 0
 
-			document.getElementById("sq"+i).innerHTML=data[i]
-		}		
-	}
+}
 
-	var date = new Date()
-	document.getElementById("time").innerHTML=
-	"Start Time: "+
-	date.getHours()+":"+
-	date.getMinutes()+":"+
-	date.getSeconds()
+game.prototype.initialize = function() {
+    // body...
+    for (var y = 0; y < this.data.length; y++) {
+        for (var x = 0; x < this.data.length; x++) {
+            if (this.data[y][x]=='') {
+                document.getElementById("sq"+y+x).innerHTML="&nbsp;"
+                this.emptybox.x = x
+                this.emptybox.y = y
+            } else{
+                document.getElementById("sq"+y+x).innerHTML=this.data[y][x]
+            }   
+        }   
+    }
 
-	function puzzleRestart(){
-		location.reload();
-	}
+    var date = new Date()
+    document.getElementById("time").innerHTML=
+    "Start Time: "+
+    date.getHours()+":"+
+    date.getMinutes()+":"+
+    date.getSeconds()
+    var date = new Date()
+    document.getElementById("end time").innerHTML=
+    "End Time: "+
+    date.getHours()+":"+
+    date.getMinutes()+":"+
+    date.getSeconds()
 
-	document.getElementById("restart")
-	.addEventListener('click',puzzleRestart);
+    document.getElementById("restart")
+    .addEventListener('click',this.puzzleRestart);
+};
 
+game.prototype.puzzleRestart = function() {
+    location.reload();
+};
+
+game.prototype.attachevent = function() {
+    var sqboxes = document.getElementsByClassName("square")
+
+    for (var i = 0; i < sqboxes.length; i++) {
+        sqboxes[i].addEventListener("mouseover", (function (model) {
+            return function (event) {
+                model.colorize(event, model);
+            }
+        })(this, false));
+        sqboxes[i].addEventListener("mouseout", (function (model) {
+            return function (event) {
+                model.decolorize(event, model);
+            }
+        })(this, false));
+        sqboxes[i].addEventListener("click", (function (model) {
+            return function (event) {
+                model.moveit(event, model);
+            }
+        })(this, false));
+
+    }
+};
+
+game.prototype.decolorize = function(event, model) {
+
+        event.srcElement.classList.remove("green")
+        event.srcElement.classList.remove("red")
+
+
+};
+
+game.prototype.colorize = function(event, model) {
+    var y = parseInt(event.srcElement.getAttribute("data-y"));
+    var x = parseInt(event.srcElement.getAttribute("data-x"));
+
+    var up    = {x: x, y: y-1};
+    var down  = {x: x, y: y+1};
+    var left  = {x: x-1, y: y};
+    var right = {x: x+1, y: y};
+
+    if (x == model.emptybox.x && y == model.emptybox.y) {
+        return
+    } else if (up.x == model.emptybox.x && up.y == model.emptybox.y) {
+        event.srcElement.classList.add("green")
+    } else if (down.x == model.emptybox.x && down.y == model.emptybox.y) {
+        event.srcElement.classList.add("green")     
+    } else if (left.x == model.emptybox.x && left.y == model.emptybox.y) {
+        event.srcElement.classList.add("green")     
+    } else if (right.x == model.emptybox.x && right.y == model.emptybox.y) {
+        event.srcElement.classList.add("green")     
+    } else{
+        event.srcElement.classList.add("red")       
+    }
+};
+
+game.prototype.moveit = function(event, model) {
+    var number=event.srcElement.innerText
+    var y = parseInt(event.srcElement.getAttribute("data-y"));
+    var x = parseInt(event.srcElement.getAttribute("data-x"));
+
+    var up    = {x: x, y: y-1};
+    var down  = {x: x, y: y+1};
+    var left  = {x: x-1, y: y};
+    var right = {x: x+1, y: y};
+
+    if (x == model.emptybox.x && y == model.emptybox.y) {
+        return;
+    }
+
+    if ((up.x == model.emptybox.x && up.y == model.emptybox.y) ||
+        (down.x == model.emptybox.x && down.y == model.emptybox.y) || 
+        (left.x == model.emptybox.x && left.y == model.emptybox.y) ||
+        (right.x == model.emptybox.x && right.y == model.emptybox.y)
+    ) {
+        document.getElementById("sq"+model.emptybox.y+model.emptybox.x).innerHTML=number;
+        event.srcElement.innerHTML = "&nbsp";
+        event.srcElement.classList.remove('red');
+        event.srcElement.classList.remove('green');
+
+        model.data[model.emptybox.y][model.emptybox.x] = number
+        model.data[y][x] = '';
+
+        model.emptybox.y = y
+        model.emptybox.x = x
+        model.doublecheck(model)
+        model.moves++
+        document.getElementById("moveitpls").innerHTML="Moves: "+model.moves
+    }
+};
+
+game.prototype.doublecheck = function(model) {
+    // body...
+    if (this.data [0][0]==1 &&
+        this.data [0][1]==2 &&    
+        this.data [0][2]==3 && 
+        this.data [1][0]==4 &&
+        this.data [1][1]==5 &&
+        this.data [1][2]==6 &&
+        this.data [2][0]==7 &&
+        this.data [2][1]==8
+        ) {
+
+        alert("Congrats :D!")
+    }
+};
+
+document.body.onload=function(){
+    var gamein = new game()
+    gamein.initialize()
+    gamein.attachevent()
+}
 </script>
 </body>
 </html>
